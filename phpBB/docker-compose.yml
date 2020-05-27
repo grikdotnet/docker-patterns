@@ -1,0 +1,74 @@
+version: "3.7"
+
+services:
+  router:
+    image: nginx:alpine
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+        max_attempts: 30
+        delay: 2s
+        window: 10s
+    volumes:
+      - ../forum:/forum/
+      - ./nginx/:/etc/nginx/:ro
+      - fpm-socket:/fpm-socket/
+    ports:
+      - "80:80"
+      - "443:443"
+
+  application:
+    image: grigori/phpextensions:7.3-fpm
+    volumes:
+      - ../forum:/forum/
+      - fpm-socket:/fpm-socket/
+      - ./php/php.ini:/usr/local/etc/php/php.ini:ro
+      - ./php/fpm.conf:/usr/local/etc/php-fpm.conf:ro
+      - ./php/init:/docker-entrypoint-init.d
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+        max_attempts: 20
+        delay: 2s
+        window: 10s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+    environment:
+      MYSQL_USER:
+      MYSQL_PASSWORD:
+      MYSQL_DATABASE:
+    env_file: ./db.env
+
+  database:
+    image: mysql:5.7
+    volumes:
+      - ./mysql/my.cnf:/etc/mysql/my.cnf
+      - db-data:/var/lib/mysql
+      - ../forum.sql:/docker-entrypoint-initdb.d/forum.sql
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        max_attempts: 20
+        delay: 30s
+        window: 120s
+    environment:
+      MYSQL_USER:
+      MYSQL_PASSWORD:
+      MYSQL_ROOT_PASSWORD:
+      MYSQL_DATABASE: forum
+    #    ports:
+    #      - "3306:3306"
+    healthcheck:
+      test: mysql -uforum --password=$$MYSQL_PASSWORD -e "quit" 2>/dev/null
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  db-data:
+  fpm-socket:
