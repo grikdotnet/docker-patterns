@@ -11,9 +11,12 @@ services:
         delay: 2s
         window: 10s
     volumes:
-      - ../forum:/forum/
-      - ./nginx/:/etc/nginx/:ro
+      - ./forum:/forum/:rw
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
+      - certificates:/etc/cert:rw
       - fpm-socket:/fpm-socket/
+    environment:
+      DOMAIN_NAME: "example.com"
     ports:
       - "80:80"
       - "443:443"
@@ -70,5 +73,6 @@ services:
       retries: 3
 
 volumes:
+  certificates:
   db-data:
   fpm-socket:
