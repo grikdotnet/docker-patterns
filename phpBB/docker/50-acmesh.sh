@@ -10,3 +10,17 @@ if [ ! -f /etc/certificates/certificate ]; then
     --nginx "${DOMAINS}"
 fi
 
+(
+ while :
+ do
+    sleep 10d
+
+    /root/.acme.sh/acme.sh --renew  \
+      --cert-file /etc/certificates/certificate \
+      --key-file /etc/certificates/key \
+      --ca-file /etc/certificates/chain \
+      --nginx "${DOMAINS}"
+
+    nginx -s reload
+ done
+) &
