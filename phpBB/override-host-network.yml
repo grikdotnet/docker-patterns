@@ -1,0 +1,11 @@
+version: "3.7"
+
+services:
+  router:
+    networks:
+      hostnet: {}
+
+networks:
+  hostnet:
+    external: true
+    name: host
