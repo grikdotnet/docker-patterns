@@ -8,3 +8,8 @@ services:
   database:
     ports:
       - "3306:3306"
+
+networks:
+  hostnet:
+    external: false
+    driver: overlay

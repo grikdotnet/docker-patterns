@@ -25,6 +25,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    networks:
+      hostnet: {}
 
   application:
     image: grigori/phpextensions:7.3-fpm
@@ -50,6 +52,8 @@ services:
       MYSQL_PASSWORD:
       MYSQL_DATABASE:
     env_file: ./db.env
+    networks:
+      backend: {}
 
   database:
     image: mysql:5.7
@@ -74,8 +78,18 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    networks:
+      backend: {}
 
 volumes:
   certificates:
   db-data:
   fpm-socket:
+
+networks:
+  hostnet:
+    external: true
+    name: host
+  backend:
+    driver: bridge
+    internal: true
