@@ -1,0 +1,20 @@
+version: "3.7"
+
+services:
+  environment:
+    LOCAL_DOMAIN_NAME: "example.local"
+  router:
+    ports:
+      - "80:80"
+      - "443:443"
+  database:
+    ports:
+      - "3306:3306"
+
+networks:
+  hostnet:
+    external: false
+    driver: bridge
+    name: hostnet
+  backend:
+    internal: false
