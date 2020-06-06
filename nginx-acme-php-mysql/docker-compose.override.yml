@@ -1,9 +1,11 @@
 version: "3.7"
 
 services:
-  environment:
-    LOCAL_DOMAIN_NAME: "example.local"
   router:
+    environment:
+      LOCAL_DOMAIN_NAME: "example.localhost"
+    volumes:
+      - ./nginx/40-issue-selfsigned.sh:/docker-entrypoint.d/40-issue-selfsigned.sh:ro
     ports:
       - "80:80"
       - "443:443"
