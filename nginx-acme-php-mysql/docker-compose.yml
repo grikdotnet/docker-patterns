@@ -47,9 +47,9 @@ services:
         delay: 10s
         order: start-first
     environment:
-      MYSQL_USER:
-      MYSQL_PASSWORD:
-      MYSQL_DATABASE:
+      DB_USER:
+      DB_PASSWORD:
+      DB_NAME:
     env_file: ./mysql/db.env
     networks:
       backend: {}
@@ -59,7 +59,7 @@ services:
     volumes:
       - ./mysql/my.cnf:/etc/mysql/my.cnf
       - db-data:/var/lib/mysql
-      - ../forum.sql:/docker-entrypoint-initdb.d/forum.sql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
     deploy:
       replicas: 1
       restart_policy:
@@ -68,13 +68,13 @@ services:
         delay: 30s
         window: 120s
     environment:
-      MYSQL_USER:
-      MYSQL_PASSWORD:
-      MYSQL_ROOT_PASSWORD:
-      MYSQL_DATABASE: forum
+      DB_USER:
+      DB_PASSWORD:
+      DB_ROOT_PASSWORD:
+      DB_NAME:
     env_file: ./mysql/db.env
     healthcheck:
-      test: mysql -uforum --password=$$MYSQL_PASSWORD -e "quit" 2>/dev/null
+      test: mysql -uforum --password=$$DB_PASSWORD -e "quit" 2>/dev/null
       interval: 30s
       timeout: 10s
       retries: 3
