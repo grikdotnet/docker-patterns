@@ -9,7 +9,7 @@ if [ ! -f /etc/certificates/certificate ]; then
     --nginx "${DOMAINS}"
 fi
 
-if [ "$SKIP_CERTIFICATE_RENEWAL" != "true" ]; then
+if [ "$SKIP_CERTIFICATE_RENEWAL" = "true" ]; then
     return 1
 fi
 
