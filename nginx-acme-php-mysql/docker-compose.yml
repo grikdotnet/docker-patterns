@@ -29,9 +29,9 @@ services:
       hostnet: {}
 
   application:
-    image: grigori/phpextensions:7.3-fpm
+    image: grigori/phpextensions:7.4-fpm
     volumes:
-      - ./scripts/:/scripts/:ro
+      - ./scripts/:/scripts/:consistent
       - fpm-socket:/fpm-socket/
       - ./etc/php/php.ini:/usr/local/etc/php/php.ini:ro
       - ./etc/php/fpm.conf:/usr/local/etc/php-fpm.conf:ro
@@ -56,7 +56,7 @@ services:
   database:
     image: mysql:5.7
     volumes:
-      - ./etc/mysql/my.cnf:/etc/mysql/my.cnf
+      - ./etc/mysql/my.cnf:/etc/mysql/my.cnf:ro
       - db-data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     deploy:

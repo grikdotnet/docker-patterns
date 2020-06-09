@@ -1,6 +1,5 @@
 CREATE TABLE T (
-    id integer unsigned PRIMARY KEY,
-    field integer
+    counter integer unsigned not null
 );
 
-INSERT INTO T (`id`, `field`) VALUES (1,100),(2,101);
+INSERT INTO T (`counter`) VALUES (0);
