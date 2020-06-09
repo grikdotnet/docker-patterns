@@ -13,10 +13,10 @@ services:
     volumes:
       - certificates:/etc/certificates/:rw
       - fpm-socket:/fpm-socket/
-      - ./nginx/30-installer.sh:/docker-entrypoint.d/30-installer.sh:ro
-      - ./nginx/50-acmesh.sh:/docker-entrypoint.d/50-acmesh.sh:ro
-      - ./nginx/healthcheck.sh:/healthcheck.sh
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./etc/nginx/30-installer.sh:/docker-entrypoint.d/30-installer.sh:ro
+      - ./etc/nginx/50-acmesh.sh:/docker-entrypoint.d/50-acmesh.sh:ro
+      - ./etc/nginx/healthcheck.sh:/healthcheck.sh
+      - ./etc/nginx/nginx.conf:/etc/nginx/nginx.conf
     environment:
       CERTIFICATE_DOMAIN_NAMES: "example.com www.example.com"
     healthcheck:
@@ -33,8 +33,8 @@ services:
     volumes:
       - ./scripts/:/scripts/:ro
       - fpm-socket:/fpm-socket/
-      - ./php/php.ini:/usr/local/etc/php/php.ini:ro
-      - ./php/fpm.conf:/usr/local/etc/php-fpm.conf:ro
+      - ./etc/php/php.ini:/usr/local/etc/php/php.ini:ro
+      - ./etc/php/fpm.conf:/usr/local/etc/php-fpm.conf:ro
     deploy:
       replicas: 1
       restart_policy:
@@ -56,9 +56,9 @@ services:
   database:
     image: mysql:5.7
     volumes:
-      - ./mysql/my.cnf:/etc/mysql/my.cnf
+      - ./etc/mysql/my.cnf:/etc/mysql/my.cnf
       - db-data:/var/lib/mysql
-      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     deploy:
       replicas: 1
       restart_policy:
