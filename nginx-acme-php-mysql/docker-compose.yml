@@ -29,15 +29,18 @@ services:
       hostnet: {}
 
   application:
-    image: grigori/phpextensions:7.4-fpm
+    image: php:7.4-fpm-alpine
     volumes:
       - fpm-socket:/fpm-socket/
       - ./etc/php/php.ini:/usr/local/etc/php/php.ini:ro
       - ./etc/php/fpm.conf:/usr/local/etc/php-fpm.conf:ro
+      - ./etc/php/php-entrypoint.sh:/entrypoint:cached
       - type: bind
         source: ./scripts/
         target: /scripts/
         consistency: cached
+    entrypoint: ["/entrypoint"]
+    command: ["php-fpm"]
     deploy:
       replicas: 1
       restart_policy:
