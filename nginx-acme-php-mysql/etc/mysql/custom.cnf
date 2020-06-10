@@ -1,0 +1,39 @@
+[mysql]
+default-character-set=utf8mb4
+
+[mysqld]
+port            = 3306
+
+# Check these settings first
+# Values are chosen for speed with no reliability
+innodb_buffer_pool_size = 350M
+innodb_flush_log_at_trx_commit = 0
+innodb_doublewrite = 0
+innodb_flush_method = O_DSYNC
+
+# Other less important Innodb parameters
+innodb_log_buffer_size=1M
+innodb_log_file_size = 32M
+
+innodb_file_per_table
+
+table_open_cache = 1024
+
+tmp_table_size = 16M
+max_heap_table_size = 16M
+
+key_buffer_size         = 8M
+
+query_cache_limit       = 1M
+query_cache_size        = 2M
+query_cache_type = 1
+
+skip-external-locking
+
+slow_query_log = OFF
+long_query_time = 1
+
+default_time_zone='+00:00'
+character-set-server = utf8mb4
+collation-server = utf8_general_ci
+collation-server = utf8mb4_unicode_520_ci

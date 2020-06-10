@@ -1,4 +1,4 @@
-version: "3.7"
+version: "3.8"
 
 services:
   router:
@@ -31,10 +31,13 @@ services:
   application:
     image: grigori/phpextensions:7.4-fpm
     volumes:
-      - ./scripts/:/scripts/:consistent
       - fpm-socket:/fpm-socket/
       - ./etc/php/php.ini:/usr/local/etc/php/php.ini:ro
       - ./etc/php/fpm.conf:/usr/local/etc/php-fpm.conf:ro
+      - type: bind
+        source: ./scripts/
+        target: /scripts/
+        consistency: cached
     deploy:
       replicas: 1
       restart_policy:
@@ -56,9 +59,9 @@ services:
   database:
     image: mysql:5.7
     volumes:
-      - ./etc/mysql/my.cnf:/etc/mysql/my.cnf:ro
+      - ./etc/mysql/custom.cnf:/etc/mysql/conf.d/custom.cnf:ro
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
       - db-data:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     deploy:
       replicas: 1
       restart_policy:

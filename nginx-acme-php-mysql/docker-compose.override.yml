@@ -1,4 +1,4 @@
-version: "3.7"
+version: "3.8"
 
 services:
 
@@ -10,6 +10,13 @@ services:
     ports:
       - "80:80"
       - "443:443"
+
+  application:
+    volumes:
+      - type: bind
+        source: ./scripts/
+        target: /scripts/
+        consistency: consistent
 
   database:
     ports:
