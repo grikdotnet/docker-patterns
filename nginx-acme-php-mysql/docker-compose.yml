@@ -53,6 +53,11 @@ services:
       - MYSQL_USER
       - MYSQL_PASSWORD
       - MYSQL_DATABASE
+    healthcheck:
+      test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET  cgi-fcgi -connect /fpm-socket/socket 1 | grep -q  'pong'
+      interval: 2s
+      timeout: 5s
+      retries: 2
     networks:
       backend: {}
 
