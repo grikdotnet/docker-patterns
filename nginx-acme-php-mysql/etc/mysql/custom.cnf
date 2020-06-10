@@ -1,3 +1,5 @@
+# This file should be set a Readonly flag in Windows / not World-writable in Mac/Linux, otherwise MySQL will ignore it
+
 [mysql]
 default-character-set=utf8mb4
 
