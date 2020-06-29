@@ -32,13 +32,16 @@ services:
     image: php:7.4-fpm-alpine
     volumes:
       - fpm-socket:/fpm-socket/
+      - ./etc/php/php-entrypoint.sh:/entrypoint
       - ./etc/php/php.ini:/usr/local/etc/php/php.ini:ro
       - ./etc/php/fpm.conf:/usr/local/etc/php-fpm.conf:ro
-      - ./etc/php/php-entrypoint.sh:/entrypoint:cached
+      # cache compiled extensions in a shared volume
+      - php-extensions:/usr/local/lib/php/extensions/
+      # application code
       - type: bind
         source: ./scripts/
         target: /scripts/
-        consistency: cached
+        consistency: delegated
     entrypoint: ["/entrypoint"]
     command: ["php-fpm"]
     deploy:
@@ -94,6 +97,7 @@ volumes:
   certificates:
   db-data:
   fpm-socket:
+  php-extensions:
 
 networks:
   hostnet:
