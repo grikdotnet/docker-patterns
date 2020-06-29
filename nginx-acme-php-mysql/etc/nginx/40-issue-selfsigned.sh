@@ -7,6 +7,8 @@ if [[ ! -f /etc/certificates/certificate ]]; then
     -keyout /etc/certificates/key -out /etc/certificates/certificate \
     -subj /CN="${LOCAL_DOMAIN_NAME}" \
     -addext subjectAltName=DNS:"${LOCAL_DOMAIN_NAME}"
+else
+  printf "Found a certificate\n"
 fi
 
-export SKIP_CERTIFICATE_RENEWAL=true
+export SELF_SIGNED=true

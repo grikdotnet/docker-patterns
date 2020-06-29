@@ -6,6 +6,7 @@ services:
     environment:
       LOCAL_DOMAIN_NAME: "example.localhost"
     volumes:
+      # Issue a self-signed certificate for local development
       - ./etc/nginx/40-issue-selfsigned.sh:/docker-entrypoint.d/40-issue-selfsigned.sh:ro
     ports:
       - "80:80"

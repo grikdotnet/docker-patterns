@@ -2,21 +2,25 @@
 
 DOMAINS=$(echo " ${CERTIFICATE_DOMAIN_NAMES}"| sed 's/[ ,]\+/ -d /g')
 
+# Check if there is a certificates file and issue new certificates on the clean run
 if [ ! -f /etc/certificates/certificate ]; then
+  printf "Issuing new certificates\n"
   /root/.acme.sh/acme.sh --issue  \
     --fullchain-file /etc/certificates/certificate \
     --key-file /etc/certificates/key \
     --nginx "${DOMAINS}"
 fi
 
-if [ "$SKIP_CERTIFICATE_RENEWAL" = "true" ]; then
+# $SELF_SIGNED is set when running `docker-compose up` locally
+# and missing when running `docker stack up` in production
+if [ "$SELF_SIGNED" = "true" ]; then
     return 1
 fi
 
 (
  while :
  do
-    sleep 10d
+    printf "Try to renew certificates now\n"
 
     /root/.acme.sh/acme.sh --renew  \
       --cert-file /etc/certificates/certificate \
@@ -25,5 +29,6 @@ fi
       --nginx "${DOMAINS}"
 
     nginx -s reload
+    sleep 10d
  done
 ) &
