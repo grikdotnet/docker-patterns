@@ -30,3 +30,4 @@ networks:
     name: hostnet
   backend:
     internal: false
+    driver: bridge

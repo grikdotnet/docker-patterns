@@ -2,7 +2,7 @@
 
 set -e
 
-apk add --no-cache --virtual ext-dev-dependencies $PHPIZE_DEPS binutils
+apk add --no-cache --virtual ext-dev-dependencies $PHPIZE_DEPS autoconf binutils dpkg-dev file g++ gcc libc-dev make pkgconf re2c
 
 if ! php -m | grep -q 'pdo_mysql' ; then
     docker-php-ext-install -j"$(grep -c processor /proc/cpuinfo)" pdo_mysql

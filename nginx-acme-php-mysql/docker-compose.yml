@@ -108,5 +108,4 @@ networks:
     external: true
     name: host
   backend:
-    driver: bridge
     internal: true
