@@ -12,10 +12,7 @@ export DOMAINS
 # Check if there is a certificates file and issue new certificates on the clean run
 if [ ! -f /etc/certificates/certificate ]; then
   printf "Issuing new certificates\n"
-  /root/.acme.sh/acme.sh --issue  \
-    --fullchain-file /etc/certificates/certificate \
-    --key-file /etc/certificates/key \
-    --nginx ${DOMAINS}
+  /root/.acme.sh/acme.sh --issue --config-home /acme --fullchain-file /etc/certificates/certificate --key-file /etc/certificates/key  --nginx --accountemail "${ACCOUNTEMAIL}" "${DOMAINS}"
 fi
 
 (

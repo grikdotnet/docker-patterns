@@ -1,7 +1,7 @@
 #!/bin/sh
 
 
-apk --no-cache add -f openssl curl
+apk --no-cache add -f openssl curl socat
 echo "Installed openssl and curl"
 
 wget -O -  https://get.acme.sh | sh

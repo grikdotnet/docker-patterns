@@ -8,11 +8,12 @@ services:
       restart_policy:
         condition: any
         max_attempts: 30
-        delay: 2s
-        window: 10s
+        delay: 30s
+        window: 20s
     volumes:
-      # A named volume to store TLS certificates and keys
+      # A volume to store TLS certificates and keys
       - certificates:/etc/certificates/:rw
+      - acme:/acme/:rw
       # Communicate with PHP via Unix socket
       - fpm-socket:/fpm-socket/
       # In stall openssl, curl and acme.sh
@@ -23,6 +24,7 @@ services:
       - ./etc/nginx/nginx.conf:/etc/nginx/nginx.conf
     environment:
       CERTIFICATE_DOMAIN_NAMES: "example.com www.example.com"
+      ACCOUNTEMAIL: "test@example.com"
     healthcheck:
       test: /bin/sh /healthcheck.sh
       interval: 2s
@@ -98,6 +100,7 @@ services:
       backend: {}
 
 volumes:
+  acme:
   certificates:
   db-data:
   fpm-socket:
