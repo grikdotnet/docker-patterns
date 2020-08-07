@@ -15,7 +15,13 @@ fi
 # Check if there is a certificates file and issue new certificates on the clean run
 if [ ! -f /etc/certificates/certificate ]; then
   printf "Issuing new certificates\n"
-  /root/.acme.sh/acme.sh --issue --config-home /acme --fullchain-file /etc/certificates/certificate --key-file /etc/certificates/key --standalone $EMAIL_CLAUSE $DOMAINS
+  if  ! nginx ; then
+    printf "Error running Nginx, check configs\n"
+  fi
+  mkdir /usr/share/nginx/html/well-known/
+  /root/.acme.sh/acme.sh --issue -w /usr/share/nginx/html/well-known/ --config-home /acme --fullchain-file /etc/certificates/certificate --key-file /etc/certificates/key $EMAIL_CLAUSE $DOMAINS
+  nginx -s stop
+  rm -rf /usr/share/nginx/html/well-known/
 fi
 
 (
@@ -23,7 +29,7 @@ fi
  do
     printf "Try to renew certificates now\n"
 
-    /root/.acme.sh/acme.sh --renew --standalone --httpport 8080 \
+    /root/.acme.sh/acme.sh --renew -w /usr/share/nginx/html/well-known/ \
       --cert-file /etc/certificates/certificate \
       --key-file /etc/certificates/key \
       --ca-file /etc/certificates/chain \
