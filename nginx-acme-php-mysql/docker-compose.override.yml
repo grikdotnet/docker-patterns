@@ -4,12 +4,18 @@ services:
 
   router:
     environment:
-      LOCAL_DOMAIN_NAME: "example.localhost"
+      LOCAL_DEPLOYMENT: "1"
+    deploy:
+      restart_policy:
+        condition: none
     ports:
       - "80:80"
       - "443:443"
 
   application:
+    deploy:
+      restart_policy:
+        condition: none
     volumes:
       - type: bind
         source: ./scripts/
@@ -17,6 +23,9 @@ services:
         consistency: consistent
 
   database:
+    deploy:
+      restart_policy:
+        condition: none
     ports:
       - "3306:3306"
 
