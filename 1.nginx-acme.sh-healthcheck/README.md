@@ -20,13 +20,12 @@ Problems:
 
 #### Solution:
 
-1. Build the container from an official Nginx docker image.
-2. Add [Acme.sh](https://github.com/acmesh-official/acme.sh) for Let's Encrypt certificates.
-3. List domains for a certificate in the environment variable
-4. A shell script `50-acme.sh` runs certificates issue and renewal routines.
-5. In production Nginx runs in a host network mode.
-6. In development environment docker-compose reads `docker-compose.override` and replaces some values thanks to YAML inheritance.
-7. A demo config for Nginx to support HTTPS with IPv6 and response for healthcheck requests is provided.
+1. Build your container from an official Nginx alpine-based docker image.
+2. List domains for the certificate in the environment variable
+3. A shell script `50-acme.sh` adds acme.sh, openssl, runs certificates issue and renewal routines.
+4. In production Nginx runs in a host network mode.
+5. `docker-compose` command reads the `docker-compose.override` file and replaces some values thanks to YAML inheritance. This turns on development mode.
+6. A demo config for Nginx to support HTTPS with IPv6 and response for healthcheck requests is provided.
 
 #### Details on issuing and renewing certificates 
 
