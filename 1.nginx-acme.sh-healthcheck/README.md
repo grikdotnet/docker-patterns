@@ -38,4 +38,4 @@ In production it runs [acme.sh](https://github.com/acmesh-official/acme.sh) to i
 
 In development run with `docker-compose up -d`
 
-In production run with `docker stack up -c docker-compose`
+In production run with `docker stack up -c docker-compose.yml mystackname`
