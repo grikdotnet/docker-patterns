@@ -1,14 +1,16 @@
 #### What is it:
 
-It's a pattern of configs for web development of small sites with Nginx.
+It's a pattern of configs for web development and running small web sites with Nginx.
+
+Sets with other services such as PHP and MySQL can be found in other folders in this repo.
 
 #### Task definition:
 
-* Run Nginx in Docker
+* Run Nginx using same configs for production and development
 * Issue and renew Let's Encript certificates in production
-* Issue self-signed certificates for local develpment environments
-* Support IPv6
-* Health-check Nginx in a container
+* Use a self-signed certificate in a local develpment environment
+* Support IPv6 in production
+* Health-check for Nginx service in a container in production
 
 Problems:
 * Nginx can't issue ACME certificates
