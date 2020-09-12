@@ -24,7 +24,7 @@ fi
 if [ ! -f "${FULLCHAIN_FILE}" ]; then
   printf "Issuing a self-signed certificate\n"
   openssl req -x509 -newkey rsa:2048 -sha256 -days 3650 -nodes \
-    -keyout "${ACME_DIR}/key.local" -out "${ACME_DIR}/certificate.local" \
+    -keyout ${ACME_DIR}/key.local -out "${ACME_DIR}/certificate".local \
     -subj /CN="${LOCAL_DOMAIN_NAME}" \
     -addext subjectAltName=DNS:"${LOCAL_DOMAIN_NAME}"
   ln -s "${ACME_DIR}/key.local" "${KEY_FILE}"

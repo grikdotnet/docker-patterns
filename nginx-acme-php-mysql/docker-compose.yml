@@ -11,13 +11,9 @@ services:
         delay: 30s
         window: 20s
     volumes:
-      # A volume to store TLS certificates and keys
-      - certificates:/etc/certificates/:rw
-      # ACME account - avoid hitting the API limit on frequent registrations
+      # ACME account and certificates
       - acme:/acme/:rw
-      # Install openssl, curl and acme.sh
-      - ./etc/nginx/30-installer.sh:/docker-entrypoint.d/30-installer.sh:ro
-      # run a daemon generating and renewing ACME certificates
+      # background issuing and renewing ACME certificates
       - ./etc/nginx/50-acmesh.sh:/docker-entrypoint.d/50-acmesh.sh:ro
       - ./etc/nginx/healthcheck.sh:/healthcheck.sh
       - ./etc/nginx/nginx.conf:/etc/nginx/nginx.conf
@@ -103,7 +99,6 @@ services:
 
 volumes:
   acme:
-  certificates:
   db-data:
   fpm-socket:
   php-extensions:
