@@ -68,7 +68,7 @@ wait_for_nginx(){
 acme(){
   mkdir -p "{$WEBROOT}/.well-known"
   chown nginx "${WEBROOT}/.well-known"
-  /root/.acme.sh/acme.sh --test "$@" -w "$WEBROOT" \
+  /root/.acme.sh/acme.sh "$@" -w "$WEBROOT" \
     --config-home "$ACME_DIR" \
     --fullchain-file "$FULLCHAIN_FILE" \
     --key-file "$KEY_FILE" \
