@@ -1,8 +1,8 @@
 #### What is it:
 
-It's a pattern of configs for web development and running small web sites with Nginx.
+It's a simple and straightforward pattern of configs for web development and running small web sites with Nginx.
 
-Sets with other services such as PHP and MySQL can be found in other folders in this repo.
+Sets of sample configs for other services such as PHP and MySQL will be added to other folders of this repo.
 
 #### Task definition:
 
@@ -11,6 +11,7 @@ Sets with other services such as PHP and MySQL can be found in other folders in 
 * Use a self-signed certificate in a local develpment environment
 * Support IPv6 in production
 * Health-check for Nginx service in a container in production
+* A standalone solution, independent from host, cron or other services
 
 Problems:
 * Nginx can't issue ACME certificates and docker does not provide tools for periodical jobs to renew certificates
