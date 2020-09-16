@@ -7,41 +7,42 @@ services:
       replicas: 1
       restart_policy:
         condition: any
-        max_attempts: 30
-        delay: 2s
-        window: 10s
+        max_attempts: 300
+        delay: 30s
+        window: 20s
     volumes:
-      - ./forum:/forum/:rw
-      - certificates:/etc/certificates:rw
-      - ./docker/certificate_generator.sh:/docker-entrypoint.d/certificate_generator.sh:ro
-      - ./docker/nginx.conf:/etc/nginx/nginx.conf
+      - acme:/acme/:rw
+      - ./etc/50-acmesh.sh:/docker-entrypoint.d/50-acmesh.sh:ro
+      - ./etc/healthcheck.sh:/healthcheck.sh
+      - ./etc/nginx.conf:/etc/nginx/nginx.conf
       - fpm-socket:/fpm-socket/
-      - ./nginx/healthcheck.sh:/healthcheck.sh
     environment:
       CERTIFICATE_DOMAIN_NAMES: "example.com www.example.com"
+      LOCAL_DOMAIN_NAME: "example.localhost"
+      ACCOUNTEMAIL: "test@example.com"
     healthcheck:
       test: /bin/sh /healthcheck.sh
       interval: 2s
       timeout: 5s
       retries: 5
-      start_period: 10s
+      start_period: 15s
     networks:
       hostnet: {}
 
-  application:
-    image: grigori/phpextensions:7.3-fpm
+  forum:
+    image: grigori/phpextensions:7.4-fpm
     volumes:
       - ../forum:/forum/
       - fpm-socket:/fpm-socket/
-      - ./php/php.ini:/usr/local/etc/php/php.ini:ro
-      - ./php/fpm.conf:/usr/local/etc/php-fpm.conf:ro
+      - ./etc/php.ini:/usr/local/etc/php/php.ini:ro
+      - ./etc/fpm.conf:/usr/local/etc/php-fpm.conf:ro
       - ./php/init:/docker-entrypoint-init.d
     deploy:
       replicas: 1
       restart_policy:
         condition: any
-        max_attempts: 20
-        delay: 2s
+        max_attempts: 50
+        delay: 5s
         window: 10s
       update_config:
         parallelism: 1
@@ -56,11 +57,10 @@ services:
       backend: {}
 
   database:
-    image: mysql:5.7
+    image: mysql:8
     volumes:
-      - ./mysql/my.cnf:/etc/mysql/my.cnf
+      - ./etc/my.cnf:/etc/mysql/my.cnf
       - db-data:/var/lib/mysql
-      - ../forum.sql:/docker-entrypoint-initdb.d/forum.sql
     deploy:
       replicas: 1
       restart_policy:
@@ -82,7 +82,7 @@ services:
       backend: {}
 
 volumes:
-  certificates:
+  acme:
   db-data:
   fpm-socket:
 
