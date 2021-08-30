@@ -11,14 +11,7 @@ ACME_DIR=${ACME_DIR:-"/acme"}
 FULLCHAIN_FILE="${ACME_DIR}/certificate"
 KEY_FILE="${ACME_DIR}/key"
 
-echo "Installing openssl and acme.sh"
-
-apk --no-cache add -f openssl && wget -O -  https://get.acme.sh | sh
-
-if ! $?; then
-  echo "Error installing packages"
-  exit 250
-fi
+apk --no-cache add -f openssl
 
 #Generate a self-signed certificate for develoment environment and to let Nginx start
 if [ ! -f "${FULLCHAIN_FILE}" ]; then
@@ -33,11 +26,14 @@ else
   printf "Found a certificate\n"
 fi
 
-if [ "${SELF_SIGNED_ONLY}" = "1" ]; then
+if [ "$SELF_SIGNED_ONLY" = "1" ]; then
+    echo "Local deployment mode"
     exit 0
 fi
 
-#In a production environment
+echo "Production mode"
+
+wget -O -  https://get.acme.sh | sh
 
 if [ ! -f "${ACME_DIR}/dhparams.pem" ]; then
     openssl dhparam -out "${ACME_DIR}/dhparams.pem" 2048
@@ -66,7 +62,7 @@ wait_for_nginx(){
 }
 
 acme(){
-  mkdir -p "{$WEBROOT}/.well-known"
+  mkdir -p "${WEBROOT}/.well-known"
   chown nginx "${WEBROOT}/.well-known"
   /root/.acme.sh/acme.sh "$@" -w "$WEBROOT" \
     --config-home "$ACME_DIR" \
@@ -74,7 +70,7 @@ acme(){
     --key-file "$KEY_FILE" \
     --reloadcmd 'nginx -s reload'
   result=$?
-  if $result; then
+  if [ $result -eq 0 ]; then
     rm -rf "${WEBROOT}/.well-known"
   fi
   return $result;
@@ -90,7 +86,6 @@ acme(){
   # Issue real a certificate instead of self-signed
   if [ "$(readlink "$FULLCHAIN_FILE")" = "${ACME_DIR}/certificate.local" ]; then
     printf "Issuing new certificates ...\n"
-    rm "$FULLCHAIN_FILE" "$KEY_FILE"
     # word splitting is used cause I don't know how to avoid it
     # in POSIX sh without array syntax like ${EMAIL[@]}
     if ! acme --issue $EMAIL $DOMAINS; then

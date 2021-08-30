@@ -25,7 +25,7 @@ services:
       test: /bin/sh /healthcheck.sh
       interval: 2s
       timeout: 5s
-      retries: 5
+      retries: 2
       start_period: 15s
     networks:
       hostnet: {}

@@ -4,11 +4,12 @@ services:
 
   router:
     environment:
-      LOCAL_DEPLOYMENT: "1"
+      SELF_SIGNED_ONLY: "1"
     deploy:
       restart_policy:
         condition: none
     healthcheck:
+      retries: 0
     ports:
       - "80:80"
       - "443:443"

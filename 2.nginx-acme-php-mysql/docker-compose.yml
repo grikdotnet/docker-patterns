@@ -7,7 +7,7 @@ services:
       replicas: 1
       restart_policy:
         condition: any
-        max_attempts: 30
+        max_attempts: 300
         delay: 30s
         window: 20s
     volumes:
@@ -27,10 +27,10 @@ services:
       test: /bin/sh /healthcheck.sh
       interval: 2s
       timeout: 5s
-      retries: 5
-      start_period: 10s
+      retries: 2
+      start_period: 15s
     networks:
-      hostnet: {}
+      - hostnet
 
   application:
     image: php:7.4-fpm-alpine
@@ -60,19 +60,19 @@ services:
         delay: 10s
         order: start-first
     environment:
-      - MYSQL_USER
-      - MYSQL_PASSWORD
-      - MYSQL_DATABASE
+      MYSQL_USER:
+      MYSQL_PASSWORD:
+      MYSQL_DATABASE:
     healthcheck:
       test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET  cgi-fcgi -connect /fpm-socket/socket 1 | grep -q  'pong'
       interval: 2s
       timeout: 5s
       retries: 2
     networks:
-      backend: {}
+      - backend
 
   database:
-    image: mysql:5.7
+    image: mysql:8
     volumes:
       - ./etc/mysql/custom.cnf:/etc/mysql/conf.d/custom.cnf:ro
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
@@ -85,17 +85,17 @@ services:
         delay: 30s
         window: 120s
     environment:
-      - MYSQL_USER
-      - MYSQL_PASSWORD
-      - MYSQL_ROOT_PASSWORD
-      - MYSQL_DATABASE
+      - MYSQL_USER=
+      - MYSQL_PASSWORD=
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_DATABASE=
     healthcheck:
       test: mysql -u$$MYSQL_USER --password=$$MYSQL_PASSWORD -e "quit" 2>/dev/null
       interval: 30s
       timeout: 10s
       retries: 3
     networks:
-      backend: {}
+      - backend
 
 volumes:
   acme:
