@@ -14,8 +14,9 @@ services:
       # ACME account config and certificates
       - acme:/acme/:rw
       # background issuing and renewing ACME certificates
-      - ./etc/50-acmesh.sh:/docker-entrypoint.d/50-acmesh.sh:ro
-      - ./etc/healthcheck.sh:/healthcheck.sh
+      - ./bin/50-https.sh:/docker-entrypoint.d/50-https.sh:ro
+      - ./bin/acme-runner.sh:/acme-runner.sh:ro
+      - ./bin/healthcheck.sh:/healthcheck.sh
       - ./etc/nginx.conf:/etc/nginx/nginx.conf
     environment:
       CERTIFICATE_DOMAIN_NAMES: "example.com www.example.com"
