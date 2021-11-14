@@ -4,7 +4,7 @@ services:
 
   router:
     environment:
-      SELF_SIGNED: "1"
+      SKIP_ACME: 1
     deploy:
       restart_policy:
         condition: none

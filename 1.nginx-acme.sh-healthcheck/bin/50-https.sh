@@ -4,16 +4,18 @@
 set -f
 
 # Check for obligatory variables
-: "${CERTIFICATE_DOMAIN_NAMES?}" "${LOCAL_DOMAIN_NAME?}"
+: "${CERTIFICATE_DOMAINS?}" "${LOCAL_DOMAIN?}"
 
 WEBROOT=${WEBROOT:-"/usr/share/nginx/html"}
-ACME_DIR=${ACME_DIR:-"/acme"}
-FULLCHAIN_FILE="${ACME_DIR}/certificate"
-KEY_FILE="${ACME_DIR}/key"
+export ACME_DIR=${ACME_DIR:-"/acme"}
+export FULLCHAIN_FILE="${ACME_DIR}/certificate"
+export KEY_FILE="${ACME_DIR}/key"
 
-apk --no-cache add -f openssl
+if ! which openssl > /dev/null ; then
+  apk add --no-cache -u openssl
+fi
 
-#Generate a self-signed certificate for develoment environment and to let Nginx start
+# Generate a self-signed certificate if there is no certificate yet, or Nginx will not start
 if [ ! -f "${FULLCHAIN_FILE}" ]; then
   printf "Issuing a self-signed certificate\n"
   openssl req -x509 -newkey rsa:2048 -sha256 -days 3650 -nodes \
@@ -26,26 +28,11 @@ else
   printf "Found a certificate\n"
 fi
 
-if [ "$SELF_SIGNED" = "1" ]; then
-    echo "Local deployment mode"
+if [ "${SKIP_ACME}" == "1" ]; then
+    echo "Skipping ACME"
     exit 0
 fi
 
 echo "Production mode"
 
-wget -O -  https://get.acme.sh | sh
-
-if [ ! -f "${ACME_DIR}/dhparams.pem" ]; then
-    openssl dhparam -out "${ACME_DIR}/dhparams.pem" 2048
-    chmod 600 dhparams.pem
-    echo "Generated dhparams"
-fi
-
-# Convert a list of domains to the command parameters
-DOMAINS=$(echo " ${CERTIFICATE_DOMAIN_NAMES}"| sed 's/[ ,]\+/ -d /g')
-
-EMAIL=
-if [ "${ACCOUNTEMAIL}" != "test@example.com" ] && expr "${ACCOUNTEMAIL}" : '\w.\+@\w.\+' >/dev/null ; then
-    EMAIL="--accountemail $ACCOUNTEMAIL"
-fi
-
+source acme-runner.sh

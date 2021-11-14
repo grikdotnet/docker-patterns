@@ -19,9 +19,10 @@ services:
       - ./bin/healthcheck.sh:/healthcheck.sh
       - ./etc/nginx.conf:/etc/nginx/nginx.conf
     environment:
-      CERTIFICATE_DOMAIN_NAMES: "example.com www.example.com"
-      LOCAL_DOMAIN_NAME: "example.localhost"
+      CERTIFICATE_DOMAINS: "example.com www.example.com"
+      LOCAL_DOMAIN: "example.localhost"
       ACCOUNTEMAIL: "test@example.com"
+      ACME_DIR: "/acme"
     healthcheck:
       test: /bin/sh /healthcheck.sh
       interval: 2s
