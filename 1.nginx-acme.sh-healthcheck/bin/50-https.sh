@@ -6,10 +6,11 @@ set -f
 # Check for obligatory variables
 : "${CERTIFICATE_DOMAINS?}" "${LOCAL_DOMAIN?}"
 
-WEBROOT=${WEBROOT:-"/usr/share/nginx/html"}
+export WEBROOT=${WEBROOT:-"/usr/share/nginx/html"}
 export ACME_DIR=${ACME_DIR:-"/acme"}
-export FULLCHAIN_FILE="${ACME_DIR}/certificate"
-export KEY_FILE="${ACME_DIR}/key"
+
+export FULLCHAIN_FILE="${ACME_DIR}/certificates.pem"
+export KEY_FILE="${ACME_DIR}/private.key"
 
 if ! which openssl > /dev/null ; then
   apk add --no-cache -u openssl
@@ -19,13 +20,13 @@ fi
 if [ ! -f "${FULLCHAIN_FILE}" ]; then
   printf "Issuing a self-signed certificate\n"
   openssl req -x509 -newkey rsa:2048 -sha256 -days 3650 -nodes \
-    -keyout ${ACME_DIR}/key.local -out "${ACME_DIR}/certificate".local \
-    -subj /CN="${LOCAL_DOMAIN_NAME}" \
-    -addext subjectAltName=DNS:"${LOCAL_DOMAIN_NAME}"
-  ln -s "${ACME_DIR}/key.local" "${KEY_FILE}"
-  ln -s "${ACME_DIR}/certificate.local" "${FULLCHAIN_FILE}"
+    -keyout "${ACME_DIR}/local.key" -out "${ACME_DIR}/certificate-local.pem" \
+    -subj /CN="${LOCAL_DOMAIN}" \
+    -addext subjectAltName=DNS:"${LOCAL_DOMAIN}"
+  ln -s "${ACME_DIR}/local.key" "${KEY_FILE}"
+  ln -s "${ACME_DIR}/certificate-local.pem" "${FULLCHAIN_FILE}"
 else
-  printf "Found a certificate\n"
+  printf "Found the HTTPS certificate\n"
 fi
 
 if [ "${SKIP_ACME}" == "1" ]; then

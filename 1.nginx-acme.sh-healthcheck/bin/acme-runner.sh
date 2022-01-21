@@ -70,6 +70,9 @@ if [ ! -f "${ACME_DIR}/dhparams.pem" ]; then
     echo "Generated dhparams"
 fi
 
+FULLCHAIN_FILE=${FULLCHAIN_FILE:-"${ACME_DIR}/certificates.pem"}
+KEY_FILE=${KEY_FILE:-"${ACME_DIR}/private.key"}
+
 # Convert a list of domains to the command parameters
 DOMAINS=$(echo " ${CERTIFICATE_DOMAINS}"| sed 's/[ ,]\+/ -d /g')
 
@@ -89,40 +92,30 @@ for _ in $(seq 5); do
 done
 
 if [ -z "$nginx_running" ]; then
-  echo "Nginx is not running"
+  echo "Nginx did not start in 5 seconds, terminating"
   exit 54
 fi
 
-acme(){
-  mkdir -p "${WEBROOT}/.well-known"
-  chown nginx "${WEBROOT}/.well-known"
-  acme.sh "$@" -w "${WEBROOT}" \
-    --config-home "${ACME_DIR}" \
-    --fullchain-file "$FULLCHAIN_FILE" \
-    --key-file "$KEY_FILE" \
-    --reloadcmd 'nginx -s reload'
-  result=$?
-  if [ $result -eq 0 ]; then
-    rm -rf "${WEBROOT}/.well-known"
-  fi
-  return $result;
-}
 
 # Issue an actual certificate instead of a self-signed one
-if [ ! -f "${ACME_DIR}/certificate.local" ] || [ "$(readlink "$FULLCHAIN_FILE")" == "${ACME_DIR}/certificate.local" ]; then
+if [ ! -f "${ACME_DIR}/certificates.pem" ] || [ "$(readlink "$FULLCHAIN_FILE")" == "${ACME_DIR}/certificate.local" ]; then
   printf "Issuing new certificates ...\n"
   # word splitting is used cause I don't know how to avoid it
   # in POSIX sh without array syntax like ${EMAIL[@]}
 
-  /root/.acme.sh/acme.sh --test --issue $EMAIL $DOMAINS"$@" -w "${WEBROOT}" \
+  acme.sh --test --issue $EMAIL $DOMAINS"$@" -w "${WEBROOT}" \
     --config-home "${ACME_DIR}" \
-    --fullchain-file "$FULLCHAIN_FILE" \
-    --key-file "$KEY_FILE" \
-    --reloadcmd 'nginx -s reload'
+    --fullchain-file "${ACME_DIR}/acme-fullchain.pem" \
+    --key-file "${ACME_DIR}/acme.key"
   result=$?
 
   if [ $result ] ; then
     echo "result: $result"
+
+    ln -s "${ACME_DIR}/key" "${KEY_FILE}"
+    ln -s "${ACME_DIR}/certificate.local" "${FULLCHAIN_FILE}"
+
+    nginx -s reload
     #rm -rf "${WEBROOT}/.well-known"
   else
     printf "Error issuing certtificate(s)\n";
